@@ -1,6 +1,6 @@
-# gatling-on-ecs: Running gatling on AWS Elastic Container Service to horizontally scale the load
+# gatling-on-ecs: Running gatling on AWS Elastic Container Service (ECS) to horizontally scale the load
 
-Allows to create an Amazon Elastic Container Service cluster from AWS [cloudformation] (gatling.cf) template. The docker container running on these instances can be created using the includes[Dockerfile](Dockerfile) that has scala, sbt and other required libraries installed along side of required [sbt based gatling](src)script.
+Allows to create an Amazon Elastic Container Service cluster from AWS [cloudformation] (gatling-on-ecs.cf) template. The docker container running on these instances can be created using the includes[Dockerfile](Dockerfile) that has scala, sbt and other required libraries installed along side of required [sbt based gatling](src)script.
 
 - Uses S3 as repository to temporarily hold the logs from all agents running gatling client. A [script] (consolidate_report.sh) is also including that can consolidate the reports from all the clients and generate html gatling statistical report.
 - Uses ECR for container repository 
@@ -14,7 +14,7 @@ Test simulation files are located here [here](src/test/scala/nearmap/) as per SB
 [Launch] (run.sh) script is the entry point for docker. 
 
 
-Depending on load specified in (setup)(src/test/scala/nearmap/SampleSimulation.scala), the volume can be  How we are scaling is guided by [gatling scaling doc](http://gatling.io/docs/2.2.3/cookbook/scaling_out.html) but we have quite a few customization as in we use sbt, docker and ECS.
+Depending on load specified in [setup](src/test/scala/nearmap/SampleSimulation.scala), the volume can be multiplied by number of tasks. How we are scaling is guided by [gatling scaling doc](http://gatling.io/docs/2.2.3/cookbook/scaling_out.html) but we have quite a few customization as in we use sbt, docker and ECS.
 
 # Creating and managing stack
 The attack starts when cluster stack is created and service starts the tasks. 
@@ -27,11 +27,11 @@ docker build -t gatling .
 docker tag hyperweb/gatling:latest 999999999999.dkr.ecr.ap-southeast-2.amazonaws.com/gatling:latest
 docker push 999999999999.dkr.ecr.ap-southeast-2.amazonaws.com/gatling:latest
 ```
-AWS account is assumed to be 999999999999. Its also specified in [cf](gatling.cf) file.
+AWS account is assumed to be 999999999999. Its also specified in [cf](gatling-on-ecs.cf) file.
 
 ##To create stack run:
 ```
-aws cloudformation create-stack --stack-name=Gatling-Performance --region=ap-southeast-2 --template-body=file:///gatling-on-ecs/gatling.cf --capabilities=CAPABILITY_IAM --parameters ParameterKey=TaskCount,ParameterValue=2 ParameterKey=ReportBucket,ParameterValue=performance-test/
+aws cloudformation create-stack --stack-name=Gatling-Performance --region=ap-southeast-2 --template-body=file:///gatling-on-ecs/gatling-on-ecs.cf --capabilities=CAPABILITY_IAM --parameters ParameterKey=TaskCount,ParameterValue=2 ParameterKey=ReportBucket,ParameterValue=performance-test/
 ```
 Where TaskCount is number of tasks and instances that ECS service will start and ReportBucket is s3 bucket where report will be created.
 
