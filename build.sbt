@@ -13,7 +13,7 @@ scalacOptions := Seq(
   "-feature", "-unchecked", "-language:implicitConversions", "-language:postfixOps")
 
 libraryDependencies ++= {
-  val version = "2.2.3"
+  val version = "2.2.5"
   Seq(
     "io.gatling.highcharts" % "gatling-charts-highcharts" % version % "test,it",
     "io.gatling" % "gatling-test-framework" % version % "test,it"
